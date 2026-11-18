@@ -48,6 +48,8 @@ import com.example.movi.ui.theme.Components.IconBadge
 import com.example.movi.ui.theme.Components.MoviHeader
 import com.example.movi.ui.theme.Components.MoviNavBar
 import com.example.movi.ui.theme.MoviColors
+import com.example.movi.ui.theme.MoviTheme
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.movi.ui.theme.ViewModel.DashboardAliadoViewModel
 
 private val AliadoTabs = listOf(
@@ -375,5 +377,27 @@ private fun Opcion(
                 fontSize = 11.sp
             )
         }
+    }
+}
+
+@Preview(showBackground = true, heightDp = 780, widthDp = 390)
+@Composable
+private fun DashboardAliadoScreenPreview() {
+    MoviTheme {
+        DashboardAliadoScreen(
+            state = DashboardAliadoUi(
+                negocio = "Café Central",
+                categoria = "Gastronomía",
+                productos = 15,
+                pendientes = 3,
+                canjesHoy = 12
+            ),
+            onMisProductos = {},
+            onAgregarProducto = {},
+            onValidarCanje = {},
+            onEditarPuntos = {},
+            onAvatarClick = {},
+            onTabSelected = {}
+        )
     }
 }

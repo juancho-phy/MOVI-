@@ -1,6 +1,6 @@
 package com.example.movi.Data.Model.Remote
 
-import okhttp3.Response
+import retrofit2.Response // ✅ Import correcto
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PUT
@@ -8,8 +8,6 @@ import retrofit2.http.Path
 import com.example.movi.Data.Model.AdminEstadisticasUi
 
 interface MoviApiService {
-
-    // ... (tus otros endpoints existentes)
 
     @GET("api/admin/estadisticas")
     suspend fun obtenerEstadisticasAdmin(

@@ -16,14 +16,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.movi.Data.Model.MoviTab
-import com.example.movi.Data.Model.Repository.PerfilRepository
 import com.example.movi.Data.Model.Repository.AuthRepository
+import com.example.movi.Data.Model.Repository.PerfilRepository
 import com.example.movi.ui.theme.Components.MoviBottomBar
-
 import com.example.movi.ui.theme.Screens.AgregarTarjetaScreen
 import com.example.movi.ui.theme.Screens.BeneficiosRoute
 import com.example.movi.ui.theme.Screens.DashboardRoute
 import com.example.movi.ui.theme.Screens.LoginRolesRoute
+import com.example.movi.ui.screens.LoginScreen// ✅ Import añadido (cámbialo a LoginRoute si así se llama tu composable)
 import com.example.movi.ui.theme.Screens.PerfilRoute
 import com.example.movi.ui.theme.Screens.RegisterScreen
 import com.example.movi.ui.theme.ViewModel.AuthViewModel
@@ -33,7 +33,6 @@ import com.example.movi.ui.theme.ViewModel.RolUsuario
 import com.example.movi.ui.theme.ViewModel.TarjetaViewModel
 
 sealed class Screen(val route: String) {
-
     object Login : Screen("login")
     object Register : Screen("register")
     object LoginRoles : Screen("login_roles")
@@ -49,7 +48,6 @@ fun MainNavigation(
     authRepository: AuthRepository,
     navController: NavHostController = rememberNavController()
 ) {
-
     val dashboardViewModel: DashboardViewModel = viewModel()
     val beneficiosViewModel: BeneficiosViewModel = viewModel()
     val tarjetaViewModel: TarjetaViewModel = viewModel()
@@ -70,7 +68,6 @@ fun MainNavigation(
         Screen.Perfil.route -> MoviTab.PERFIL
         else -> MoviTab.INICIO
     }
-
 
     val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModel.provideFactory(authRepository)
@@ -119,6 +116,25 @@ fun MainNavigation(
                     onNavegarDashboard = { rol ->
                         rolSeleccionado = rol
                         navController.navigate(Screen.Login.route)
+                    }
+                )
+            }
+
+            // ✅ Destino faltante registrado en el NavHost
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    viewModel = authViewModel,
+                    onNavigateToRegister = {
+                        authViewModel.resetState()
+                        navController.navigate(Screen.Register.route)
+                    },
+                    onLoginSuccess = { _ ->
+                        navController.navigate(Screen.Dashboard.route) {
+                            popUpTo(Screen.LoginRoles.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -192,7 +208,7 @@ fun MainNavigation(
                         authViewModel.resetState()
                         navController.popBackStack()
                     },
-                    onRegisterSuccess = { rol ->
+                    onRegisterSuccess = { _ ->
                         navController.navigate(Screen.Dashboard.route) {
                             popUpTo(Screen.LoginRoles.route) {
                                 inclusive = true
@@ -202,7 +218,6 @@ fun MainNavigation(
                     }
                 )
             }
-
         }
     }
 }
