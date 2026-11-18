@@ -29,9 +29,55 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movi.Data.Model.PerfilUi
+import com.example.movi.Data.Model.Repository.PerfilRepository
 import com.example.movi.Data.Model.ServicioAtencion
 import com.example.movi.ui.theme.MoviColors
+import com.example.movi.ui.theme.ViewModel.PerfilUiState
+import com.example.movi.ui.theme.ViewModel.PerfilViewModel
+
+
+// ==================== CAPA DE RUTA (ROUTE) ====================
+@Composable
+fun PerfilRoute(
+    repository: PerfilRepository,
+    onCerrarSesion: () -> Unit
+) {
+    val perfilViewModel: PerfilViewModel = viewModel(
+        factory = PerfilViewModel.provideFactory(repository)
+    )
+
+    when (val state = perfilViewModel.uiState) {
+        PerfilUiState.Loading -> {
+            Text("Cargando perfil...")
+        }
+
+        is PerfilUiState.Error -> {
+            Text(state.message)
+        }
+
+        is PerfilUiState.Success -> {
+            PerfilScreen(
+                state = state.perfil,
+                onTomarFoto = { perfilViewModel.tomarFoto() },
+                onElegirGaleria = { perfilViewModel.elegirGaleria() },
+                onEliminarFoto = { perfilViewModel.eliminarFoto() },
+                onEliminarTarjeta = { perfilViewModel.eliminarTarjeta() },
+                onCambiarTarjeta = { perfilViewModel.cambiarTarjeta() },
+                onAgregarTarjeta = { perfilViewModel.agregarTarjeta() },
+                onServicio = { servicio ->
+                    // Aquí conectaremos LINEA, CHAT y PQRS.
+                },
+                onCerrarSesion = {
+                    perfilViewModel.cerrarSesion(onCerrarSesion)
+                }
+            )
+        }
+    }
+}
+
+// ==================== CAPA DE VISTA (SCREEN) ====================
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -333,7 +379,6 @@ private fun OpcionFoto(
     }
 }
 
-// Componentes básicos de soporte visual por si no los tenías definidos en otro archivo:
 @Composable
 private fun IconBadge(icon: ImageVector, backgroundColor: Color, tintColor: Color, size: Dp = 40.dp) {
     Box(

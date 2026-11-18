@@ -1,4 +1,4 @@
-package com.example.movi.data.repository
+package com.example.movi.Data.Model.Repository
 
 import com.example.movi.Data.Model.Remote.ApiService
 import com.example.movi.Data.Model.Remote.TokenManager

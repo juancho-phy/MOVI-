@@ -4,7 +4,9 @@ import com.example.movi.Data.Model.PerfilResponse
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface PerfilApiService {
 
@@ -16,4 +18,5 @@ interface PerfilApiService {
 
     @POST("api/auth/logout")
     suspend fun cerrarSesion(): Response<Unit>
+
 }

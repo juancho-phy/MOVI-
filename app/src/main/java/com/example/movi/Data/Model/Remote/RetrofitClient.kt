@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private const val BASE_URL = "https://tu-backend-movi.onrender.com/api/" // Reemplaza con tu URL real
+    private const val BASE_URL = "https://movi-2.onrender.com/swagger-ui/index.html" // Reemplaza con tu URL real
 
     private var retrofitInstance: Retrofit? = null
 

@@ -4,7 +4,9 @@ import com.example.movi.Data.Model.PerfilResponse
 import com.example.movi.Data.Model.Remote.PerfilApiService
 import retrofit2.Response
 
-class PerfilRepository(private val apiService: PerfilApiService) {
+class PerfilRepository(
+    private val apiService: PerfilApiService
+) {
 
     suspend fun getPerfil(): Response<PerfilResponse> {
         return apiService.obtenerPerfil()

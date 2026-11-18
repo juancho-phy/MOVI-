@@ -12,10 +12,11 @@ object MoviColors {
     val RedLight = Color(0xFFF5736B)
     val Yellow = Color(0xFFFFC400)
     val Orange = Color(0xFFFF8A2B)
+    val GrayLight = Color(0xFFAAAAAA)
 
     // Fondos y neutros
     val Bg = Color(0xFFECEEF8)
-    val Background = Color(0xFFECEEF8) // Alias para compatibilidad con PerfilScreen
+    val Background = Color(0xFFFFEB3B) // Alias para compatibilidad con PerfilScreen
     val Ink = Color(0xFF1B1B3A)
     val Navy = Color(0xFF1B1B3A)       // Alias para textos principales
     val Muted = Color(0xFF8A8AA0)
