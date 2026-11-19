@@ -1,20 +1,35 @@
 package com.example.movi.Data.Model
 
+
+import com.google.gson.annotations.SerializedName
+
 data class LoginRequest(
-    val email: String,
-    val password: String
+
+    @SerializedName("correoElectronico")
+    val correoElectronico: String,
+
+    @SerializedName("contrasena")
+    val contrasena: String
 )
 
 data class RegisterRequest(
+
+    @SerializedName("nombreCompleto")
     val nombreCompleto: String,
-    val email: String,
-    val password: String
+
+    @SerializedName("correoElectronico")
+    val correoElectronico: String,
+
+    @SerializedName("contrasena")
+    val contrasena: String,
+
+    @SerializedName("tipoDocumento")
+    val tipoDocumento: String,
+
+    @SerializedName("documentoIdentidad")
+    val documentoIdentidad: String,
+
+    @SerializedName("fotoPerfilURL")
+    val fotoPerfilURL: String? = null
 )
 
-data class AuthResponse(
-    val token: String,
-    val email: String? = null,
-    val nombreCompleto: String? = null,
-    val rol: String? = null,      // PASAJERO, ALIADO, ADMINISTRADOR
-    val puntos: Int? = 0
-)

@@ -11,33 +11,93 @@ class AuthRepository(
     private val apiService: ApiService,
     private val tokenManager: TokenManager
 ) {
-    suspend fun login(email: String, password: String): Result<AuthResponse> {
+    suspend fun login(
+        email: String,
+        password: String
+    ): Result<AuthResponse> {
+
         return try {
-            val response = apiService.login(LoginRequest(email.trim(), password))
+            val response = apiService.login(
+                LoginRequest(
+                    email.trim(),
+                    password
+                )
+            )
+
             if (response.isSuccessful && response.body() != null) {
+
                 val body = response.body()!!
-                tokenManager.saveSession(body.token, body.rol, body.email ?: email)
+
+                tokenManager.saveSession(
+                    token = body.token,
+                    rol = body.rol ?: "PASAJERO",
+                    email = body.email ?: email.trim()
+                )
+
                 Result.success(body)
+
             } else {
-                Result.failure(Exception("Credenciales inválidas (${response.code()})"))
+                Result.failure(
+                    Exception(
+                        "Credenciales inválidas (${response.code()}): ${response.errorBody()?.string()}"
+                    )
+                )
             }
+
         } catch (e: Exception) {
-            Result.failure(Exception("Error de conexión con el servidor: ${e.message}"))
+            Result.failure(
+                Exception("Error de conexión con el servidor: ${e.message}")
+            )
         }
     }
 
-    suspend fun register(nombre: String, email: String, password: String): Result<AuthResponse> {
+    suspend fun register(
+        nombre: String,
+        email: String,
+        password: String,
+        tipoDocumento: String,
+        documentoIdentidad: String
+    ): Result<AuthResponse>{
+
         return try {
-            val response = apiService.register(RegisterRequest(nombre.trim(), email.trim(), password))
+            val response = apiService.register(
+                RegisterRequest(
+                    nombreCompleto = nombre.trim(),
+                    correoElectronico = email.trim(),
+                    contrasena = password,
+                    tipoDocumento = tipoDocumento,
+                    documentoIdentidad = documentoIdentidad.trim(),
+                    fotoPerfilURL = null
+                )
+            )
+
             if (response.isSuccessful && response.body() != null) {
+
                 val body = response.body()!!
-                tokenManager.saveSession(body.token, body.rol, body.email ?: email)
+
+                tokenManager.saveSession(
+                    token = body.token,
+                    rol = body.rol ?: "PASAJERO",
+                    email = body.email ?: email.trim()
+                )
+
                 Result.success(body)
+
             } else {
-                Result.failure(Exception("No se pudo completar el registro (${response.code()})"))
+                Result.failure(
+                    Exception(
+                        "No se pudo completar el registro (${response.code()}): ${
+                            response.errorBody()?.string()
+                        }"
+                    )
+                )
             }
+
         } catch (e: Exception) {
-            Result.failure(Exception("Error de conexión: ${e.message}"))
+            Result.failure(
+                Exception("Error de conexión: ${e.message}")
+            )
         }
     }
 }
+

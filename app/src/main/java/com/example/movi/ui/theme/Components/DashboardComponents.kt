@@ -24,76 +24,128 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import com.example.movi.ui.theme.MoviColors
+
 @Composable
 fun MoviHeader(
     saludo: String,
-    avatarIcon: ImageVector,
-    chipIcon: ImageVector,
+    avatarIcon: androidx.compose.ui.graphics.vector.ImageVector,
+    chipIcon: androidx.compose.ui.graphics.vector.ImageVector,
     chipTexto: String,
     onAvatarClick: () -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF172554))
-            .padding(horizontal = 24.dp, vertical = 24.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = saludo,
-                color = Color.White,
-                fontSize = 23.sp,
-                fontWeight = FontWeight.Bold
+            .height(230.dp)
+            .clip(
+                RoundedCornerShape(
+                    bottomStart = 40.dp,
+                    bottomEnd = 40.dp
+                )
             )
-
-            Surface(
-                modifier = Modifier.clickable(onClick = onAvatarClick),
-                shape = RoundedCornerShape(50.dp),
-                color = Color.White.copy(alpha = 0.15f)
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        MoviColors.Red,
+                        MoviColors.RedLight
+                    ),
+                    start = androidx.compose.ui.geometry.Offset.Zero,
+                    end = androidx.compose.ui.geometry.Offset(
+                        Float.POSITIVE_INFINITY,
+                        Float.POSITIVE_INFINITY
+                    )
+                )
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp, vertical = 22.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(modifier = Modifier.padding(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "MOVI",
+                        color = Color.White,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 1.sp
+                    )
+                    Text(
+                        text = "+",
+                        color = MoviColors.Yellow,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .shadow(4.dp, CircleShape)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.20f))
+                        .clickable { onAvatarClick() },
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
                         imageVector = avatarIcon,
                         contentDescription = "Perfil",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(23.dp)
                     )
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Surface(
-            color = Color.White.copy(alpha = 0.15f),
-            shape = RoundedCornerShape(50.dp)
-        ) {
+            Text(
+                text = saludo,
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Row(
-                modifier = Modifier.padding(
-                    horizontal = 12.dp,
-                    vertical = 7.dp
-                ),
-                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.18f))
+                    .padding(horizontal = 13.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = chipIcon,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(15.dp)
                 )
+
+                Spacer(modifier = Modifier.width(7.dp))
 
                 Text(
                     text = chipTexto,
                     color = Color.White,
-                    fontSize = 11.sp
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
     }
 }
+
 
 @Composable
 fun MoviGradientButton(
@@ -104,41 +156,53 @@ fun MoviGradientButton(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(14.dp),
+            .height(48.dp)
+            .shadow(
+                elevation = 7.dp,
+                shape = CircleShape,
+                ambientColor = MoviColors.Red.copy(alpha = 0.20f),
+                spotColor = MoviColors.Red.copy(alpha = 0.20f)
+            )
+            .clip(CircleShape)
+            .clickable { onClick() },
+        shape = CircleShape,
         color = Color.Transparent
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .background(
-                    brush = Brush.horizontalGradient(
+                    Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFFE50035),
-                            Color(0xFFFF5A65)
+                            MoviColors.Yellow,
+                            MoviColors.Orange,
+                            MoviColors.Yellow
                         )
                     )
                 )
-                .padding(
-                    horizontal = 18.dp,
-                    vertical = 15.dp
-                ),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 20.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = text,
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            if (showArrow) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "  ›",
+                    text = text,
                     color = Color.White,
-                    fontSize = 20.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 )
+
+                if (showArrow) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "›",
+                        color = Color.White,
+                        fontSize = 23.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

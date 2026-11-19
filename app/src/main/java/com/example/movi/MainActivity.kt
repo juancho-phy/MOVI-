@@ -80,14 +80,18 @@ class MainActivity : ComponentActivity() {
         val data = currentIntent?.data ?: return
 
         if (data.scheme == "movi" && data.host == "auth-success") {
+
             val token = data.getQueryParameter("token")
 
             if (!token.isNullOrBlank()) {
+
                 val tokenManager = TokenManager(applicationContext)
 
+                // Guardamos el token temporalmente.
+                // El rol y el correo se deben consultar al backend.
                 tokenManager.saveSession(
                     token = token,
-                    rol = "PASAJERO",
+                    rol = "",
                     email = null
                 )
             }

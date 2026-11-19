@@ -4,14 +4,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.ViewModelProvider
 import com.example.movi.Data.Model.AdminEstadisticasUi
 import com.example.movi.Data.Model.AdminTab
 import com.example.movi.Data.Model.SolicitudAliadoUi
 import com.example.movi.Data.Model.UsuarioAdminUi
+import com.example.movi.Data.Model.Repository.AdminRepository
+import kotlinx.coroutines.launch
 
-
-
-class AdminViewModel : ViewModel() {
+class AdminViewModel(
+    private val repository: AdminRepository
+) : ViewModel() {
 
     var tabSeleccionada by mutableStateOf(AdminTab.RESUMEN)
         private set
@@ -19,45 +23,127 @@ class AdminViewModel : ViewModel() {
     var estadisticas by mutableStateOf(AdminEstadisticasUi())
         private set
 
-    var solicitudesPendientes by mutableStateOf(
-        listOf(
-            SolicitudAliadoUi("1", "Café Sabana", "contacto@cafesabana.com", "Café y comidas", "Calle 9"),
-            SolicitudAliadoUi("2", "FitZone Gym", "admin@fitzone.co", "Salud y deporte", "Avenida Principal"),
-            SolicitudAliadoUi("3", "Cine Centro", "ventas@cinecentro.com", "Entretenimiento", "Centro Comercial")
-        )
-    )
+    var solicitudesPendientes by mutableStateOf<List<SolicitudAliadoUi>>(emptyList())
         private set
 
-    var usuariosSistema by mutableStateOf(
-        listOf(
-            UsuarioAdminUi("1", "Camila Torres", "Activo", true),
-            UsuarioAdminUi("2", "Carlos Rojas", "Bloqueado: actividad sospechosa", false),
-            UsuarioAdminUi("3", "Laura Gómez", "Activo", true)
-        )
-    )
+    var usuariosSistema by mutableStateOf<List<UsuarioAdminUi>>(emptyList())
         private set
+
+    var isLoading by mutableStateOf(false)
+        private set
+
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
+    var mensajeExito by mutableStateOf<String?>(null)
+        private set
+
+    init {
+        cargarEstadisticas()
+    }
 
     fun cambiarTab(nuevaTab: AdminTab) {
         tabSeleccionada = nuevaTab
     }
 
+    fun cargarEstadisticas() {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            repository.obtenerEstadisticasAdmin()
+                .onSuccess { resultado ->
+                    estadisticas = resultado
+                }
+                .onFailure { error ->
+                    errorMessage = error.message
+                }
+
+            isLoading = false
+        }
+    }
+
     fun aprobarAliado(id: String) {
-        solicitudesPendientes = solicitudesPendientes.filter { it.id != id }
+        viewModelScope.launch {
+            errorMessage = null
+            mensajeExito = null
+
+            repository.aprobarAliado(id)
+                .onSuccess {
+                    mensajeExito = "Aliado aprobado correctamente"
+                    solicitudesPendientes =
+                        solicitudesPendientes.filterNot { it.id == id }
+                    cargarEstadisticas()
+                }
+                .onFailure {
+                    errorMessage = it.message
+                }
+        }
     }
 
     fun rechazarAliado(id: String) {
-        solicitudesPendientes = solicitudesPendientes.filter { it.id != id }
+        viewModelScope.launch {
+            errorMessage = null
+            mensajeExito = null
+
+            repository.rechazarAliado(id)
+                .onSuccess {
+                    mensajeExito = "Solicitud rechazada correctamente"
+                    solicitudesPendientes =
+                        solicitudesPendientes.filterNot { it.id == id }
+                    cargarEstadisticas()
+                }
+                .onFailure {
+                    errorMessage = it.message
+                }
+        }
     }
 
     fun toggleBloqueoUsuario(id: String) {
-        usuariosSistema = usuariosSistema.map { usuario ->
-            if (usuario.id == id) {
-                val nuevoActivo = !usuario.activo
-                usuario.copy(
-                    activo = nuevoActivo,
-                    estado = if (nuevoActivo) "Activo" else "Bloqueado manualmente"
-                )
-            } else usuario
+        viewModelScope.launch {
+            errorMessage = null
+            mensajeExito = null
+
+            repository.toggleBloqueoUsuario(id)
+                .onSuccess {
+                    usuariosSistema = usuariosSistema.map { usuario ->
+                        if (usuario.id == id) {
+                            val nuevoActivo = !usuario.activo
+                            usuario.copy(
+                                activo = nuevoActivo,
+                                estado = if (nuevoActivo) {
+                                    "Activo"
+                                } else {
+                                    "Bloqueado manualmente"
+                                }
+                            )
+                        } else {
+                            usuario
+                        }
+                    }
+
+                    mensajeExito = "Estado del usuario actualizado"
+                }
+                .onFailure {
+                    errorMessage = it.message
+                }
         }
+    }
+
+    companion object {
+        fun provideFactory(
+            repository: AdminRepository
+        ): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(
+                    modelClass: Class<T>
+                ): T {
+                    if (modelClass.isAssignableFrom(AdminViewModel::class.java)) {
+                        return AdminViewModel(repository) as T
+                    }
+                    throw IllegalArgumentException("ViewModel desconocido")
+                }
+            }
     }
 }

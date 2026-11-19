@@ -20,10 +20,13 @@ import com.example.movi.Data.Model.Repository.PerfilRepository
 import com.example.movi.Data.Model.Repository.AuthRepository
 import com.example.movi.ui.theme.Components.MoviBottomBar
 
+import com.example.movi.ui.theme.Screens.AdminDashboardRoute
 import com.example.movi.ui.theme.Screens.AgregarTarjetaScreen
 import com.example.movi.ui.theme.Screens.BeneficiosRoute
+import com.example.movi.ui.theme.Screens.DashboardAliadoRoute
 import com.example.movi.ui.theme.Screens.DashboardRoute
 import com.example.movi.ui.theme.Screens.LoginRolesRoute
+import com.example.movi.ui.theme.Screens.LoginScreen
 import com.example.movi.ui.theme.Screens.PerfilRoute
 import com.example.movi.ui.theme.Screens.RegisterScreen
 import com.example.movi.ui.theme.ViewModel.AuthViewModel
@@ -33,11 +36,14 @@ import com.example.movi.ui.theme.ViewModel.RolUsuario
 import com.example.movi.ui.theme.ViewModel.TarjetaViewModel
 
 sealed class Screen(val route: String) {
-
     object Login : Screen("login")
     object Register : Screen("register")
     object LoginRoles : Screen("login_roles")
+
     object Dashboard : Screen("dashboard")
+    object DashboardAliado : Screen("dashboard_aliado")
+    object DashboardAdmin : Screen("dashboard_admin")
+
     object Tarjeta : Screen("tarjeta")
     object Beneficios : Screen("beneficios")
     object Perfil : Screen("perfil")
@@ -57,10 +63,11 @@ fun MainNavigation(
     val navBackStackEntry = navController.currentBackStackEntryAsState().value
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val mostrarBottomBar = currentRoute !in listOf(
-        Screen.LoginRoles.route,
-        Screen.Login.route,
-        Screen.Register.route
+    val mostrarBottomBar = currentRoute in listOf(
+        Screen.Dashboard.route,
+        Screen.Tarjeta.route,
+        Screen.Beneficios.route,
+        Screen.Perfil.route
     )
 
     val currentTab = when (currentRoute) {
@@ -123,6 +130,28 @@ fun MainNavigation(
                 )
             }
 
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    viewModel = authViewModel,
+                    onNavigateToRegister = {
+                        navController.navigate(Screen.Register.route)
+                    },
+                    onLoginSuccess = { rol ->
+                        val dest = when (rol.uppercase()) {
+                            "ALIADO" -> Screen.DashboardAliado.route
+                            "ADMINISTRADOR", "ADMIN" -> Screen.DashboardAdmin.route
+                            else -> Screen.Dashboard.route
+                        }
+                        navController.navigate(dest) {
+                            popUpTo(Screen.LoginRoles.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+
             composable(Screen.Dashboard.route) {
                 DashboardRoute(
                     viewModel = dashboardViewModel,
@@ -137,6 +166,31 @@ fun MainNavigation(
                     },
                     onAvatarClick = {
                         navController.navigate(Screen.Perfil.route)
+                    }
+                )
+            }
+
+            composable(Screen.DashboardAliado.route) {
+                DashboardAliadoRoute(
+                    onMisProductos = {},
+                    onAgregarProducto = {},
+                    onValidarCanje = {},
+                    onEditarPuntos = {},
+                    onAvatarClick = {
+                        navController.navigate(Screen.Perfil.route)
+                    }
+                )
+            }
+
+            composable(Screen.DashboardAdmin.route) {
+                AdminDashboardRoute(
+                    onCerrarSesion = {
+                        navController.navigate(Screen.LoginRoles.route) {
+                            popUpTo(Screen.LoginRoles.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
