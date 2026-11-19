@@ -41,10 +41,15 @@ class AuthViewModel(
 
             repository.login(email, password)
                 .onSuccess { auth ->
+                    val rol = if (!auth.rol.isNullOrBlank()) {
+                        auth.rol.uppercase().trim()
+                    } else {
+                        "PASAJERO"
+                    }
                     uiState = uiState.copy(
                         isLoading = false,
                         isSuccess = true,
-                        userRole = auth.rol ?: "PASAJERO"
+                        userRole = rol
                     )
                 }
                 .onFailure { error ->
@@ -93,10 +98,15 @@ class AuthViewModel(
 
             repository.register(nombre, email, password)
                 .onSuccess { auth ->
+                    val rol = if (!auth.rol.isNullOrBlank()) {
+                        auth.rol.uppercase().trim()
+                    } else {
+                        "PASAJERO"
+                    }
                     uiState = uiState.copy(
                         isLoading = false,
                         isSuccess = true,
-                        userRole = auth.rol ?: "PASAJERO"
+                        userRole = rol
                     )
                 }
                 .onFailure { error ->

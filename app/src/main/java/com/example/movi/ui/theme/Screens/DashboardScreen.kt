@@ -34,14 +34,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movi.Data.Model.DashboardUsuarioUi
 import com.example.movi.Data.Model.MoviTab
 import com.example.movi.Data.Model.TipoCuenta
-import com.example.movi.ui.theme.Components.GradientButton
+import com.example.movi.ui.theme.Components.*
 import com.example.movi.ui.theme.MoviColors
 import com.example.movi.ui.theme.ViewModel.DashboardViewModel
-import com.example.movi.ui.theme.Components.IconBadge
-import com.example.movi.ui.theme.Components.StatusChip
-import com.example.movi.ui.theme.Components.MoviBottomBar
-import com.example.movi.ui.theme.Components.MoviHeader
-
 
 @Composable
 fun DashboardRoute(
@@ -76,163 +71,125 @@ fun DashboardUsuarioScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MoviColors.Background)
+            .background(MoviColors.Bg)
+            .verticalScroll(rememberScrollState())
     ) {
+        MoviHeader(
+            saludo = "Hola, ${state.nombre}",
+            avatarIcon = Icons.Outlined.Person,
+            chipIcon = if (institucional) {
+                Icons.Outlined.School
+            } else {
+                Icons.Outlined.Email
+            },
+            chipTexto = if (institucional) {
+                "Correo institucional · Estudiante"
+            } else {
+                "Correo personal"
+            },
+            onAvatarClick = onAvatarClick
+        )
+
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .pullUp(36.dp)
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-
-                MoviHeader(
-                    saludo = "Hola, ${state.nombre}",
-                    avatarIcon = Icons.Outlined.Person,
-                    chipIcon = if (institucional) {
-                        Icons.Outlined.School
-                    } else {
-                        Icons.Outlined.Email
-                    },
-                    chipTexto = if (institucional) {
-                        "Correo institucional · Estudiante"
-                    } else {
-                        "Correo personal"
-                    },
-                    onAvatarClick = onAvatarClick
-                )
-
-                Surface(
-                    modifier = Modifier
-                        .padding(
-                            start = 24.dp,
-                            end = 24.dp,
-                            top = 176.dp
-                        )
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(28.dp),
-                    color = Color.White,
-                    shadowElevation = 8.dp
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                shadowElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = if (institucional) {
-                                "Tus beneficios estudiantiles"
-                            } else {
-                                "Tus beneficios"
-                            },
-                            color = MoviColors.Navy,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
-                        )
+                    Text(
+                        text = if (institucional) {
+                            "Tus beneficios estudiantiles"
+                        } else {
+                            "Tus beneficios"
+                        },
+                        color = MoviColors.Navy,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
+                    )
 
-                        Text(
-                            text = if (institucional) {
-                                "Transporte con tarifa estudiantil y descuentos comerciales"
-                            } else {
-                                "Descuentos en comercios aliados"
-                            },
-                            color = MoviColors.Gray,
-                            fontSize = 12.sp
-                        )
+                    Text(
+                        text = if (institucional) {
+                            "Transporte con tarifa estudiantil y descuentos comerciales"
+                        } else {
+                            "Descuentos en comercios aliados"
+                        },
+                        color = MoviColors.Gray,
+                        fontSize = 11.sp
+                    )
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                        GradientButton(
-                            "Ver mis beneficios",
-                            onVerBeneficios
-                        )
-                    }
+                    GradientButton(
+                        text = "Ver mis beneficios",
+                        onClick = onVerBeneficios,
+                        showArrow = true
+                    )
                 }
             }
-
-            Spacer(modifier = Modifier.height(26.dp))
 
             Text(
                 text = "Beneficios disponibles",
                 color = MoviColors.Navy,
                 fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-                modifier = Modifier.padding(horizontal = 24.dp)
+                fontSize = 14.sp,
+                modifier = Modifier.padding(top = 12.dp)
             )
 
-            Column(
-                modifier = Modifier.padding(
-                    horizontal = 24.dp,
-                    vertical = 12.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                if (institucional) {
+            if (institucional) {
+                BeneficioItem(
+                    icon = Icons.Outlined.DirectionsBus,
+                    iconBg = MoviColors.YellowBg,
+                    iconTint = MoviColors.Yellow,
+                    titulo = "Transporte estudiantil",
+                    descripcion = "Tarifa preferencial en todas las rutas",
+                    trailing = { StatusChip("Activo", MoviColors.GreenBg, MoviColors.Green) },
+                    onClick = onTransporteClick
+                )
 
-                    BeneficioItem(
-                        icon = Icons.Outlined.DirectionsBus,
-                        iconBg = MoviColors.YellowBg,
-                        iconTint = MoviColors.YellowText,
-                        titulo = "Transporte estudiantil",
-                        descripcion = "Tarifa preferencial en todas las rutas",
-                        trailing = {
-                            StatusChip(
-                                text = "Activo",
-                                bg = MoviColors.GreenBg,
-                                textColor = MoviColors.Green
-                            )
-                        },
-                        onClick = onTransporteClick
-                    )
+                BeneficioItem(
+                    icon = Icons.Outlined.Storefront,
+                    iconBg = MoviColors.PinkBg,
+                    iconTint = MoviColors.Red,
+                    titulo = "Comercios aliados",
+                    descripcion = "Descuentos en comida, tiendas y más",
+                    trailing = { Chevron() },
+                    onClick = onComerciosClick
+                )
+            } else {
+                BeneficioItem(
+                    icon = Icons.Outlined.Storefront,
+                    iconBg = MoviColors.PinkBg,
+                    iconTint = MoviColors.Red,
+                    titulo = "Comercios aliados",
+                    descripcion = "Descuentos en comida, tiendas y más",
+                    trailing = { Chevron() },
+                    onClick = onComerciosClick
+                )
 
-                    BeneficioItem(
-                        icon = Icons.Outlined.Storefront,
-                        iconBg = MoviColors.PinkBg,
-                        iconTint = MoviColors.Red,
-                        titulo = "Comercios aliados",
-                        descripcion = "Descuentos en comida, tiendas y más",
-                        trailing = {
-                            Chevron()
-                        },
-                        onClick = onComerciosClick
-                    )
-
-                } else {
-
-                    BeneficioItem(
-                        icon = Icons.Outlined.Storefront,
-                        iconBg = MoviColors.PinkBg,
-                        iconTint = MoviColors.Red,
-                        titulo = "Comercios aliados",
-                        descripcion = "Descuentos en comida, tiendas y más",
-                        trailing = {
-                            Chevron()
-                        },
-                        onClick = onComerciosClick
-                    )
-
-                    BeneficioItem(
-                        icon = Icons.Outlined.Lock,
-                        iconBg = Color(0xFFECEBF1),
-                        iconTint = Color(0xFF9E9AA6),
-                        titulo = "Transporte estudiantil",
-                        descripcion = "Solo con correo institucional",
-                        trailing = {
-                            StatusChip(
-                                text = "Bloqueado",
-                                bg = Color(0xFFECEBF1),
-                                textColor = MoviColors.Gray
-                            )
-                        },
-                        bloqueado = true,
-                        onClick = {}
-                    )
-                }
+                BeneficioItem(
+                    icon = Icons.Outlined.Lock,
+                    iconBg = MoviColors.NeutralBg,
+                    iconTint = MoviColors.NeutralIcon,
+                    titulo = "Transporte estudiantil",
+                    descripcion = "Solo con correo institucional",
+                    trailing = { StatusChip("Bloqueado", MoviColors.NeutralBg, MoviColors.Gray) },
+                    bloqueado = true,
+                    onClick = {}
+                )
             }
         }
 
-        MoviBottomBar(
-            selected = MoviTab.INICIO,
-            onSelect = onTabSelected
-        )
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -264,20 +221,21 @@ private fun BeneficioItem(
                 enabled = !bloqueado,
                 onClick = onClick
             ),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(16.dp),
         color = Color.White,
-        shadowElevation = 3.dp
+        shadowElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             IconBadge(
-                icon,
-                iconBg,
-                iconTint,
-                size = 46.dp
+                icon = icon,
+                backgroundColor = iconBg,
+                tintColor = iconTint,
+                size = 40.dp,
+                shape = RoundedCornerShape(12.dp)
             )
 
             Column(
@@ -291,13 +249,13 @@ private fun BeneficioItem(
                         MoviColors.Navy
                     },
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
+                    fontSize = 13.sp
                 )
 
                 Text(
                     text = descripcion,
                     color = MoviColors.Gray,
-                    fontSize = 11.sp
+                    fontSize = 10.sp
                 )
             }
 

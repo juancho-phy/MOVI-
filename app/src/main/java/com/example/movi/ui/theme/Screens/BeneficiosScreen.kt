@@ -32,15 +32,12 @@ import com.example.movi.Data.Model.CategoriaBeneficio
 import com.example.movi.Data.Model.BeneficiosUi
 import com.example.movi.Data.Model.MoviTab
 import com.example.movi.ui.theme.MoviColors
-import com.example.movi.ui.theme.Components.MoviBottomBar
 import com.example.movi.ui.theme.ViewModel.BeneficiosViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import com.example.movi.ui.theme.Components.IconBadge
 import com.example.movi.ui.theme.Components.StatusChip
-
 
 @Composable
 fun BeneficiosRoute(
@@ -57,9 +54,7 @@ fun BeneficiosRoute(
         aliadosVisibles = viewModel.aliadosVisibles,
         onCategoriaSelected = { viewModel.seleccionarCategoria(it) },
         onAliadoClick = { aliado ->
-            // Canjea el beneficio y genera automáticamente el comprobante PDF
             viewModel.canjearAliado(context, aliado) { archivoPdf ->
-                // Opcional: Aquí puedes manejar el archivo generado (ej. abrirlo con un Intent)
             }
         },
         onTransporteClick = onTransporteClick,
@@ -120,7 +115,6 @@ fun BeneficiosScreen(
                 )
             }
         }
-        MoviBottomBar(selected = MoviTab.BENEFICIOS, onSelect = onTabSelected)
     }
 }
 

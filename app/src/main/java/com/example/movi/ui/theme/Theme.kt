@@ -16,13 +16,26 @@ object MoviColors {
 
     // Fondos y neutros
     val Bg = Color(0xFFECEEF8)
-    val Background = Color(0xFFFFEB3B) // Alias para compatibilidad con PerfilScreen
+    val Background = Color(0xFFECEEF8) // Actualizado al mismo valor que Bg
+    val BackgroundYellow = Color(0xFFFFEB3B)
     val Ink = Color(0xFF1B1B3A)
     val Navy = Color(0xFF1B1B3A)       // Alias para textos principales
     val Muted = Color(0xFF8A8AA0)
     val Gray = Color(0xFF8A8AA0)       // Alias para textos secundarios
     val Border = Color(0xFFD9D9E3)
     val Divider = Color(0xFFE2E2EC)    // Tono de líneas divisorias
+
+    // Nuevos colores solicitados
+    val RedBright = Color(0xFFFF3B1F)
+    val HeaderTop = Color(0xFFD7192B)
+    val HeaderBottom = Color(0xFFF47A7A)
+    val AuthHeaderTop = Color(0xFFC8102E)
+    val AuthHeaderMid = Color(0xFFE5311F)
+    val AuthHeaderBottom = Color(0xFFF26A1D)
+    val InputIcon = Color(0xFF9A9AA8)
+    val LinkRed = Color(0xFFC8102E)
+    val NeutralBg = Color(0xFFECEBF1)
+    val NeutralIcon = Color(0xFF9E9AA6)
 
     // Acentos y fondos de tarjetas / chips
     val Green = Color(0xFF2E9E5B)
@@ -43,9 +56,16 @@ fun MoviTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = lightColorScheme(
             primary = MoviColors.Red,
+            secondary = MoviColors.Orange,
             background = MoviColors.Background,
-            surface = Color.White
+            surface = Color.White,
+            onPrimary = Color.White,
+            onBackground = MoviColors.Ink,
+            onSurface = MoviColors.Ink,
+            outline = MoviColors.Border,
+            error = MoviColors.Danger
         ),
+        typography = Typography,
         content = content
     )
 }

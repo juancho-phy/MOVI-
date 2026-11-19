@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -17,12 +19,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.movi.ui.theme.MoviColors
 
 @Composable
 fun MoviHeader(
@@ -35,60 +39,75 @@ fun MoviHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF172554))
-            .padding(horizontal = 24.dp, vertical = 24.dp)
+            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        MoviColors.HeaderTop,
+                        MoviColors.HeaderBottom
+                    )
+                )
+            )
+            .statusBarsPadding()
+            .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 48.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = saludo,
-                color = Color.White,
-                fontSize = 23.sp,
-                fontWeight = FontWeight.Bold
-            )
+            MoviLogo(fontSize = 20.sp)
 
             Surface(
                 modifier = Modifier.clickable(onClick = onAvatarClick),
                 shape = RoundedCornerShape(50.dp),
-                color = Color.White.copy(alpha = 0.15f)
+                color = Color.White.copy(alpha = 0.25f)
             ) {
-                Box(modifier = Modifier.padding(10.dp)) {
+                Box(modifier = Modifier.padding(7.dp)) {
                     Icon(
                         imageVector = avatarIcon,
                         contentDescription = "Perfil",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = saludo,
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Surface(
-            color = Color.White.copy(alpha = 0.15f),
+            color = Color.White.copy(alpha = 0.25f),
             shape = RoundedCornerShape(50.dp)
         ) {
             Row(
                 modifier = Modifier.padding(
-                    horizontal = 12.dp,
-                    vertical = 7.dp
+                    horizontal = 10.dp,
+                    vertical = 4.dp
                 ),
-                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = chipIcon,
                     contentDescription = null,
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(14.dp)
                 )
 
                 Text(
                     text = chipTexto,
                     color = Color.White,
-                    fontSize = 11.sp
+                    fontSize = 10.sp
                 )
             }
         }

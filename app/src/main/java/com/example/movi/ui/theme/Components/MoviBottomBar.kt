@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.sp
 import com.example.movi.Data.Model.MoviTab
 import com.example.movi.ui.theme.MoviColors
 
-/** Barra inferior: Inicio, Tarjeta, Beneficios y Perfil. */
-// Función auxiliar que asocia cada pestaña con su respectivo ícono gráfico de UI
+private val visibleTabs = listOf(MoviTab.INICIO, MoviTab.TARJETA, MoviTab.BENEFICIOS, MoviTab.PERFIL)
+
 private fun MoviTab.toIcon(): ImageVector = when (this) {
     MoviTab.INICIO -> Icons.Outlined.Home
     MoviTab.TARJETA -> Icons.Outlined.CreditCard
@@ -46,7 +46,6 @@ private fun MoviTab.toLabel(): String = when (this) {
     else -> "Inicio"
 }
 
-/** Barra inferior: Inicio, Tarjeta, Beneficios y Perfil. */
 @Composable
 fun MoviBottomBar(
     selected: MoviTab,
@@ -61,10 +60,10 @@ fun MoviBottomBar(
     ) {
         Row(
             Modifier.fillMaxWidth().navigationBarsPadding()
-                .padding(horizontal = 28.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            MoviTab.entries.forEach { tab ->
+            visibleTabs.forEach { tab ->
                 val on = tab == selected
                 val color = if (on) MoviColors.Red else Color(0xFF9E9AA6)
                 val icon = tab.toIcon()

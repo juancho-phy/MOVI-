@@ -4,24 +4,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.movi.ui.theme.Components.*
+import com.example.movi.ui.theme.MoviColors
 import com.example.movi.ui.theme.ViewModel.AuthViewModel
 
 @Composable
@@ -32,8 +31,11 @@ fun RegisterScreen(
 ) {
     var nombreCompleto by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var identificacion by remember { mutableStateOf("") } // TODO: integración identificación
     var password by remember { mutableStateOf("") }
     var confirmarPassword by remember { mutableStateOf("") }
+    var aceptaTerminos by remember { mutableStateOf(false) }
+    var aceptaTratamiento by remember { mutableStateOf(false) }
 
     val state = viewModel.uiState
 
@@ -47,193 +49,144 @@ fun RegisterScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFE53935),
-                        Color(0xFFEF5350),
-                        Color(0xFFFF7043)
-                    )
-                )
-            )
+            .background(MoviColors.Bg)
     ) {
+        DotsGrid(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 10.dp, bottom = 96.dp)
+        )
+
+        OrangeRing(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(x = 24.dp, y = 24.dp)
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Únete a MOVI+",
-                fontSize = 34.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-            Text(
-                text = "Acumula puntos en cada viaje",
-                fontSize = 14.sp,
-                color = Color(0xFFFFCDD2),
-                modifier = Modifier.padding(bottom = 24.dp)
-            )
+            AuthHeader(busHeight = 90.dp, bottomPadding = 60.dp)
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+            Column(
+                modifier = Modifier
+                    .pullUp(36.dp)
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color.White,
+                    shadowElevation = 12.dp
                 ) {
-                    Text(
-                        text = "Crear Cuenta de Pasajero",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFC62828),
-                        modifier = Modifier.padding(bottom = 18.dp)
-                    )
-
-                    OutlinedTextField(
-                        value = nombreCompleto,
-                        onValueChange = { nombreCompleto = it },
-                        placeholder = { Text("Nombre completo", color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(14.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE53935),
-                            unfocusedBorderColor = Color.LightGray
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        placeholder = { Text("Correo electrónico", color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray) },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE53935),
-                            unfocusedBorderColor = Color.LightGray
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        placeholder = { Text("Contraseña", color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray) },
-                        singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE53935),
-                            unfocusedBorderColor = Color.LightGray
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = confirmarPassword,
-                        onValueChange = { confirmarPassword = it },
-                        placeholder = { Text("Confirmar contraseña", color = Color.Gray) },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray) },
-                        singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFFE53935),
-                            unfocusedBorderColor = Color.LightGray
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    if (state.errorMessage != null) {
-                        Text(
-                            text = state.errorMessage,
-                            color = MaterialTheme.colorScheme.error,
-                            fontSize = 13.sp,
-                            modifier = Modifier.padding(top = 12.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(22.dp))
-
-                    // Botón Rojo Sólido para Registro
-                    Button(
-                        onClick = {
-                            viewModel.register(nombreCompleto, email, password, confirmarPassword)
-                        },
-                        enabled = !state.isLoading,
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(
-                                color = Color.White,
-                                strokeWidth = 2.dp,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Spacer(modifier = Modifier.width(24.dp))
-                                Text(
-                                    text = "Registrarme",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp
-                                )
-                                Surface(
-                                    shape = RoundedCornerShape(50),
-                                    color = Color(0xFFC62828),
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowForward,
-                                            contentDescription = null,
-                                            tint = Color.White
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    TextButton(onClick = onNavigateBackToLogin) {
                         Text(
-                            text = "¿Ya tienes cuenta? Inicia sesión",
-                            color = Color(0xFFE53935),
-                            fontWeight = FontWeight.SemiBold
+                            text = "Crear Cuenta de Pasajero",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MoviColors.LinkRed,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+
+                        MoviTextField(
+                            value = nombreCompleto,
+                            onValueChange = { nombreCompleto = it },
+                            placeholder = "Nombre completo",
+                            leadingIcon = Icons.Outlined.Person
+                        )
+
+                        MoviTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            placeholder = "Correo electrónico",
+                            leadingIcon = Icons.Outlined.Email,
+                            keyboardType = KeyboardType.Email
+                        )
+
+                        MoviTextField(
+                            value = identificacion,
+                            onValueChange = { identificacion = it },
+                            placeholder = "Identificación",
+                            leadingIcon = Icons.Outlined.Badge,
+                            keyboardType = KeyboardType.Number
+                        )
+
+                        MoviTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            placeholder = "Contraseña",
+                            leadingIcon = Icons.Outlined.Lock,
+                            isPassword = true,
+                            keyboardType = KeyboardType.Password
+                        )
+
+                        MoviTextField(
+                            value = confirmarPassword,
+                            onValueChange = { confirmarPassword = it },
+                            placeholder = "Confirmar contraseña",
+                            leadingIcon = Icons.Outlined.Lock,
+                            isPassword = true,
+                            keyboardType = KeyboardType.Password
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            MoviCheckRow(
+                                checked = aceptaTerminos,
+                                onCheckedChange = { aceptaTerminos = it },
+                                label = "Acepto los términos y condiciones"
+                            )
+                            MoviCheckRow(
+                                checked = aceptaTratamiento,
+                                onCheckedChange = { aceptaTratamiento = it },
+                                label = "Acepto el tratamiento de mis datos"
+                            )
+                        }
+
+                        if (state.errorMessage != null) {
+                            Text(
+                                text = state.errorMessage,
+                                color = MoviColors.Danger,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        MoviPillButton(
+                            text = "Registrar",
+                            onClick = {
+                                viewModel.register(nombreCompleto, email, password, confirmarPassword)
+                            },
+                            enabled = aceptaTerminos && aceptaTratamiento,
+                            loading = state.isLoading,
+                            arrow = PillArrow.End
                         )
                     }
                 }
+
+                TextButton(onClick = onNavigateBackToLogin) {
+                    Text(
+                        text = "¿Ya tienes cuenta? Inicia sesión",
+                        color = MoviColors.LinkRed,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

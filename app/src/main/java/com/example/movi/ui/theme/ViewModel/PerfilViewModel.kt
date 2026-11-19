@@ -39,20 +39,24 @@ class PerfilViewModel(
                     val data = response.body()!!
 
                     val perfilReal = PerfilUi(
-                        nombre = data.nombre,
-                        tipoCuenta = data.tipoCuenta,
-                        correo = data.correo,
-                        identificacion = data.identificacion,
+                        nombre = data.nombre.orEmpty(),
+                        tipoCuenta = data.tipoCuenta.orEmpty(),
+                        correo = data.correo.orEmpty(),
+                        identificacion = data.identificacion.orEmpty(),
                         tarjeta = data.tarjeta?.let {
-                            TarjetaUi(it.ultimos4)
+                            TarjetaUi(it.ultimos4.orEmpty())
                         }
                     )
 
                     uiState = PerfilUiState.Success(perfilReal)
                 } else {
-                    uiState = PerfilUiState.Error(
-                        "No se pudo cargar la información del perfil"
-                    )
+                    val code = response.code()
+                    val mensaje = if (code == 401 || code == 403) {
+                        "Tu sesión no tiene acceso al perfil (código $code). Cierra sesión e inicia de nuevo."
+                    } else {
+                        "No se pudo cargar la información del perfil (código $code)."
+                    }
+                    uiState = PerfilUiState.Error(mensaje)
                 }
             } catch (e: Exception) {
                 uiState = PerfilUiState.Error(

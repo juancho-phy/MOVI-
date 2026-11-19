@@ -63,7 +63,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     MainNavigation(
                         perfilRepository = perfilRepository,
-                        authRepository = authRepository
+                        authRepository = authRepository,
+                        tokenManager = tokenManager
                     )
                 }
             }

@@ -16,18 +16,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.movi.Data.Model.MoviTab
+import com.example.movi.Data.Model.Remote.TokenManager
 import com.example.movi.Data.Model.Repository.AuthRepository
 import com.example.movi.Data.Model.Repository.PerfilRepository
+import com.example.movi.ui.screens.LoginScreen
 import com.example.movi.ui.theme.Components.MoviBottomBar
+import com.example.movi.ui.theme.Screens.AdminDashboardRoute
 import com.example.movi.ui.theme.Screens.AgregarTarjetaScreen
 import com.example.movi.ui.theme.Screens.BeneficiosRoute
 import com.example.movi.ui.theme.Screens.DashboardRoute
 import com.example.movi.ui.theme.Screens.LoginRolesRoute
-import com.example.movi.ui.screens.LoginScreen// ✅ Import añadido (cámbialo a LoginRoute si así se llama tu composable)
 import com.example.movi.ui.theme.Screens.PerfilRoute
 import com.example.movi.ui.theme.Screens.RegisterScreen
 import com.example.movi.ui.theme.ViewModel.AuthViewModel
 import com.example.movi.ui.theme.ViewModel.BeneficiosViewModel
+import com.example.movi.ui.theme.ViewModel.DashboardAliadoViewModel
 import com.example.movi.ui.theme.ViewModel.DashboardViewModel
 import com.example.movi.ui.theme.ViewModel.RolUsuario
 import com.example.movi.ui.theme.ViewModel.TarjetaViewModel
@@ -37,25 +40,45 @@ sealed class Screen(val route: String) {
     object Register : Screen("register")
     object LoginRoles : Screen("login_roles")
     object Dashboard : Screen("dashboard")
+    object DashboardAliado : Screen("dashboard_aliado")
+    object DashboardAdmin : Screen("dashboard_admin")
     object Tarjeta : Screen("tarjeta")
     object Beneficios : Screen("beneficios")
     object Perfil : Screen("perfil")
+}
+
+private fun String?.toRolUsuario(): RolUsuario {
+    val clean = this?.trim()?.uppercase()?.removePrefix("ROLE_") ?: return RolUsuario.PASAJERO
+    return when (clean) {
+        "ALIADO" -> RolUsuario.ALIADO
+        "ADMINISTRADOR", "ADMIN" -> RolUsuario.ADMINISTRADOR
+        else -> RolUsuario.PASAJERO
+    }
+}
+
+private fun RolUsuario.homeRoute(): String = when (this) {
+    RolUsuario.PASAJERO -> Screen.Dashboard.route
+    RolUsuario.ALIADO -> Screen.DashboardAliado.route
+    RolUsuario.ADMINISTRADOR -> Screen.DashboardAdmin.route
 }
 
 @Composable
 fun MainNavigation(
     perfilRepository: PerfilRepository,
     authRepository: AuthRepository,
+    tokenManager: TokenManager,
     navController: NavHostController = rememberNavController()
 ) {
     val dashboardViewModel: DashboardViewModel = viewModel()
     val beneficiosViewModel: BeneficiosViewModel = viewModel()
     val tarjetaViewModel: TarjetaViewModel = viewModel()
 
+    var rolActual by remember { mutableStateOf(RolUsuario.PASAJERO) }
+
     val navBackStackEntry = navController.currentBackStackEntryAsState().value
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val mostrarBottomBar = currentRoute !in listOf(
+    val mostrarBottomBar = rolActual == RolUsuario.PASAJERO && currentRoute !in listOf(
         Screen.LoginRoles.route,
         Screen.Login.route,
         Screen.Register.route
@@ -75,6 +98,25 @@ fun MainNavigation(
 
     var rolSeleccionado by remember {
         mutableStateOf(RolUsuario.PASAJERO)
+    }
+
+    fun irAlInicioSegunRol(rolTexto: String) {
+        val rol = rolTexto.toRolUsuario()
+        rolActual = rol
+        navController.navigate(rol.homeRoute()) {
+            popUpTo(Screen.LoginRoles.route) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
+
+    fun cerrarSesion() {
+        tokenManager.clearSession()
+        authViewModel.resetState()
+        rolActual = RolUsuario.PASAJERO
+        navController.navigate(Screen.Login.route) {
+            popUpTo(navController.graph.id) { inclusive = true }
+            launchSingleTop = true
+        }
     }
 
     Scaffold(
@@ -120,7 +162,6 @@ fun MainNavigation(
                 )
             }
 
-            // ✅ Destino faltante registrado en el NavHost
             composable(Screen.Login.route) {
                 LoginScreen(
                     viewModel = authViewModel,
@@ -128,13 +169,8 @@ fun MainNavigation(
                         authViewModel.resetState()
                         navController.navigate(Screen.Register.route)
                     },
-                    onLoginSuccess = { _ ->
-                        navController.navigate(Screen.Dashboard.route) {
-                            popUpTo(Screen.LoginRoles.route) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                    onLoginSuccess = { rol ->
+                        irAlInicioSegunRol(rol)
                     }
                 )
             }
@@ -153,6 +189,29 @@ fun MainNavigation(
                     },
                     onAvatarClick = {
                         navController.navigate(Screen.Perfil.route)
+                    }
+                )
+            }
+
+            composable(Screen.DashboardAliado.route) {
+                DashboardAliadoViewModel.DashboardAliadoRoute(
+                    onMisProductos = { /* TODO */ },
+                    onAgregarProducto = { /* TODO */ },
+                    onValidarCanje = { /* TODO */ },
+                    onEditarPuntos = { /* TODO */ },
+                    onAvatarClick = { navController.navigate(Screen.Perfil.route) },
+                    onTabSelected = { i ->
+                        if (i == 3) {
+                            navController.navigate(Screen.Perfil.route)
+                        }
+                    }
+                )
+            }
+
+            composable(Screen.DashboardAdmin.route) {
+                AdminDashboardRoute(
+                    onCerrarSesion = {
+                        cerrarSesion()
                     }
                 )
             }
@@ -191,12 +250,7 @@ fun MainNavigation(
                 PerfilRoute(
                     repository = perfilRepository,
                     onCerrarSesion = {
-                        navController.navigate(Screen.LoginRoles.route) {
-                            popUpTo(Screen.LoginRoles.route) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                        cerrarSesion()
                     }
                 )
             }
@@ -208,13 +262,8 @@ fun MainNavigation(
                         authViewModel.resetState()
                         navController.popBackStack()
                     },
-                    onRegisterSuccess = { _ ->
-                        navController.navigate(Screen.Dashboard.route) {
-                            popUpTo(Screen.LoginRoles.route) {
-                                inclusive = true
-                            }
-                            launchSingleTop = true
-                        }
+                    onRegisterSuccess = { rol ->
+                        irAlInicioSegunRol(rol)
                     }
                 )
             }

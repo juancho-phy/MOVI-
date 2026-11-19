@@ -50,11 +50,51 @@ fun PerfilRoute(
 
     when (val state = perfilViewModel.uiState) {
         PerfilUiState.Loading -> {
-            Text("Cargando perfil...")
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MoviColors.Bg),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = MoviColors.Red)
+            }
         }
 
         is PerfilUiState.Error -> {
-            Text(state.message)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MoviColors.Bg)
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "No se pudo cargar tu perfil",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = MoviColors.Navy
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = state.message,
+                    fontSize = 13.sp,
+                    color = MoviColors.Gray,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Button(
+                    onClick = { perfilViewModel.cargarPerfil() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MoviColors.Red)
+                ) {
+                    Text("Reintentar")
+                }
+                TextButton(
+                    onClick = { perfilViewModel.cerrarSesion(onCerrarSesion) }
+                ) {
+                    Text("Cerrar sesión", color = MoviColors.Red, fontWeight = FontWeight.Bold)
+                }
+            }
         }
 
         is PerfilUiState.Success -> {

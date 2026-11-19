@@ -42,7 +42,7 @@ fun LoginRolesScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(MoviColors.Red, MoviColors.RedLight, MoviColors.Background))),
+            .background(Brush.verticalGradient(listOf(MoviColors.Red, MoviColors.RedLight, MoviColors.BackgroundYellow))),
         contentAlignment = Alignment.Center
     ) {
         Surface(

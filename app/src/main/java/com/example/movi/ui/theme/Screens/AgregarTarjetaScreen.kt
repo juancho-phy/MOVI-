@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import com.example.movi.Data.Model.EstadoTarjeta
 import com.example.movi.Data.Model.MoviTab
 import com.example.movi.ui.theme.MoviColors
-import com.example.movi.ui.theme.Components.MoviBottomBar
 
 
 // --- Componentes auxiliares requeridos localmente para mantener el diseño intacto ---
@@ -205,7 +204,6 @@ fun AgregarTarjetaScreen(
                 }
             }
         }
-        MoviBottomBar(selected = MoviTab.TARJETA, onSelect = onTabSelected)
     }
 }
 
@@ -295,5 +293,3 @@ private fun TarjetaGuardadaPreview() {
         onBack = {}
     )
 }
-
-
